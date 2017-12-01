@@ -1,0 +1,96 @@
+<html>
+
+<head>
+  <script src = "https://d3js.org/d3.v3.min.js"></script>
+</head>
+
+<body>
+
+  <div id = "chart"></div>
+
+</body>
+
+<script>
+
+  var width = 500,height = 500,padding = 50;
+
+  var data = [{ country : 'US',name : 'A',age:25},
+              { country : 'US',name : 'A',age:20},
+              { country : 'US',name : 'A',age:10},
+              { country : 'US',name : 'A',age:5},
+              { country : 'US',name : 'A',age:35},
+              { country : 'US',name : 'A',age:45},
+              { country : 'US',name : 'A',age:85},
+              { country : 'US',name : 'A',age:22},
+              { country : 'India',name : 'A',age:45},
+              { country : 'India',name : 'A',age:50},
+              { country : 'India',name : 'A',age:63},
+              { country : 'India',name : 'A',age:34},
+              { country : 'India',name : 'A',age:24},
+              { country : 'India',name : 'A',age:12},
+              { country : 'India',name : 'A',age:4},
+              { country : 'India',name : 'A',age:38},
+              { country : 'India',name : 'A',age:42},
+              { country : 'India',name : 'A',age:20},
+              { country : 'India',name : 'A',age:26}];
+   
+  
+  
+  var arr = data.map(function(x){return x.age;})
+  
+  var histogram = d3.layout.histogram().bins(6)(arr);// Returns a bunch of arrays whose number is equal to bins
+  console.log(histogram)
+  
+  var hc = d3.scale.linear();
+  var wc = d3.scale.linear();
+  
+  hc.domain([0,d3.max(histogram.map(function(x) {return x.length;}))]);
+  hc.range([0,height]);
+  
+  wc.domain([0,d3.max(arr)]);
+  wc.range([0,width]);
+  
+  var xaxis = d3.svg.axis()
+                .scale(wc)
+                .orient('bottom')
+
+                
+  var svg = d3.select("#chart")
+              .append('svg')
+              .attr('width',width)
+              .attr('height',height + padding)
+              .append('g')
+                .attr('transform','translate(20,0)')
+  var xgroup = svg.append('g')
+                  .attr('transform','translate(0,'+height+')')
+                  .call(xaxis);
+                  
+              
+  svg.selectAll('rect')
+     .data(histogram)
+     .enter()
+     .append('rect')
+     .attr('x',function(d,i){ return wc(d.x);})
+     .attr('y',function(d,i){ return height - hc(d.y);})
+     .attr('width',function(d,i){return wc(d.dx) - 0.5;})
+     .attr('height',function(d,i){return hc(d.y);})
+     .style('fill','darkblue');
+     
+  var frequency = svg.selectAll('.freq')
+     .data(histogram)
+     .enter()
+     .append('g')
+     //.attr('transform',function(d,i){ return 'translate('+wc(d.x)+','+height - hc(d.y)+')';})
+     .attr('class','freq');
+     
+  frequency.append('text')
+            .attr('x',function(d,i){return wc(d.x) + wc(d.dx)/2;})
+            .attr('y',function(d,i){return height - hc(d.y) + 15;})
+            .text(function(d,i){ return (d.y); });
+  
+  
+  
+  
+</script>
+
+</html>

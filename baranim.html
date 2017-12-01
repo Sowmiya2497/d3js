@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+<head>
+  <script src="https://d3js.org/d3.v3.min.js"></script>
+  <style>
+    
+  
+  .chart rect {
+    fill: steelblue;
+  }
+
+  svg {
+  font: 10px sans-serif;
+}
+
+path.line {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+path.area {
+  fill: #e7e7e7;
+}
+
+.axis {
+  shape-rendering: crispEdges;
+}
+
+.x.axis line {
+  stroke: #fff;
+}
+
+.x.axis .minor {
+  stroke-opacity: .5;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.y.axis line,
+.y.axis path {
+  fill: none;
+  stroke: #000;
+}
+  </style>
+</head>
+<body>
+  <svg class="chart"></svg>
+</body>
+<script>
+var employees = [
+  {dept: 'A', age : 22},
+  {dept: 'B', age : 26},
+  {dept: 'C', age : 35},
+  {dept: 'D', age : 30},
+  {dept: 'E', age : 27}
+];
+
+var maxHeight = 400;
+var maxWidth = 400;
+var maxAge = 65; 
+var barSpacing = 1; 
+var padding = {
+    left: 40, right: 0,
+    top: 20, bottom: 40
+};
+
+svgWidth = maxWidth - padding.left - padding.right;
+svgHeight = maxHeight - padding.top - padding.bottom;
+
+function animateBarsUp()
+{
+  
+  var convert=
+  {
+    x:d3.scale.ordinal(),
+    y:d3.scale.linear()
+  };
+  
+  var axis=
+  {
+    x:d3.svg.axis().orient('bottom'),
+    y:d3.svg.axis().orient('left')
+  };
+  
+  axis.x.scale(convert.x);
+  axis.y.scale(convert.y);
+  
+  convert.x.rangeRoundBands([0,svgWidth]);
+  convert.y.range([svgHeight,0]);
+  
+  convert.x.domain(employees.map(function (d){return d.dept;}))
+  convert.y.domain([0,maxAge])
+  
+  
+  var svg = d3.select(".chart")
+          .attr(
+          {
+            width:maxWidth,
+            height:maxHeight
+          }
+          ); 
+  var svgcontainer = svg.append('g')
+          .attr(
+          {
+            transform: function (d, i) {
+          return 'translate(' + padding.left + ',' + padding.top + ')';
+          }
+          }
+          );
+          
+  svgcontainer.append('g')
+    .attr(
+    {
+      transform:'translate(0,'+svgHeight+')'
+    }
+    )
+    .call(axis.x);
+    
+  svgcontainer.append('g')
+    .attr({height:svgHeight})
+    .call(axis.y);
+  
+  var bars = svgcontainer
+    .selectAll('g.bar-group')
+    .data(employees)
+    .enter()
+    .append('g') // Container for the each bar
+    .attr({
+      transform: function (d, i) {
+        return 'translate(' + convert.x(d.dept) + ', 0)';
+      },
+      class: 'bar-group'
+    });
+
+  bars.append('rect')
+        .attr({
+        y: svgHeight,
+        height: 0,
+        width: function(d) {return convert.x.rangeBand(d) - 1;},
+        class: 'bar'
+    })
+    .transition()
+    .duration(1500)
+    .attr({
+      y: function (d, i) {
+        return convert.y(d.age);
+      },
+      height: function (d, i) {
+        return svgHeight - convert.y(d.age);
+      }
+    });    
+  
+  
+  
+return svgcontainer;
+
+};
+
+animateBarsUp();
+
+</script>
+</html>

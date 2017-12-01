@@ -1,0 +1,62 @@
+<html>
+
+<head>
+  <script src = "https://d3js.org/d3.v3.min.js"></script>
+</head>
+
+<body>
+
+  <div id = "chart"></div>
+
+</body>
+
+<script>
+
+  var data = [{state:'Tamil Nadu',votes:50 },
+              {state:'Kerala',votes:20 },
+              {state:'Karnataka',votes:45 },
+              {state:'Orissa',votes:35 },
+              {state:'Haryana',votes:15 }];
+              
+  var colorArray = ['#660033',' #990000','#ffff80','#cc3300','#804000'];
+              
+              
+  //value sets the value accessor of bubble to the specified function.
+  //The value accessor is invoked for each input data element, and returns a number representing the numeric value of the node. 
+  //This value is used to set the area of each circle proportionally to the value.
+  var bubble = d3.layout.pack().sort(null).size([600,600]).value(function(x){return x.votes;}).padding(3);//x is each object in array
+  
+  
+
+  //Returns an array of children nodes corresponding to the root node,each with properties x,y,radius
+  //{children:data} - pass each row of the data array to the bubble.nodes() fn. This returns the children of that row
+  var nodes = bubble.nodes({children:data}).filter(function(d){return !d.children});//filter out the parent/outer bubbles
+  
+  var diameter = 600;
+
+	var svg = d3.select('#chart').append('svg')
+					.attr('width', diameter)
+					.attr('height', diameter);
+
+  
+  var circles = svg.selectAll('circle')
+					.data(nodes)
+          .enter()
+          .append('circle')
+          .attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; })
+          .attr('r', function(d) { return d.r; })
+          .style('fill', function(d,i) { return colorArray[i]; });
+  
+  
+  var groups = svg.selectAll('g')
+                  .data(nodes)
+                  .enter()
+                  .append('g')
+                  .attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; });
+                
+  var labels = groups.append('text')
+                     .text(function(d,i){return d.state;});
+
+</script>
+
+</html>

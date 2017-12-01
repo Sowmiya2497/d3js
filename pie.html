@@ -1,0 +1,123 @@
+<html>
+
+<head>
+  <script src = "https://d3js.org/d3.v3.min.js"></script>
+</head>
+
+<body>
+
+<div class = "donut">
+  <svg></svg>
+</div>
+  
+</body>
+
+<script>
+
+  var tvshows = [
+    {show: 'Dr.Who', count : 25},
+    {show: 'Grey\'s Anatomy', count : 10},
+    {show: 'Friends', count : 15},
+    {show: 'The Wire', count : 30},
+    {show: 'Late Show', count : 20}
+];
+
+  var colorArray = ['#2C3E50','#AAB7B8','#85C1E9','#641E16','#F08080'];
+  
+ 
+  
+  var i = 0 ;
+  var total = 0;
+  for(i=0;i<5;i++)
+  {
+    total+=tvshows[i].count;
+  }
+
+  outerRadius = 200;
+  innerRadius = 150;
+  
+  function Donut(c)
+  {
+  
+    var pie = d3.layout.pie().value(function (d) {return d.count;});
+    
+  
+    var chart = d3.select('.donut svg')
+                  .attr({
+                    width : 400,height : 400
+                  });
+                  
+
+    var arc = d3.svg.arc();
+
+
+    arc.outerRadius(outerRadius)
+        .innerRadius(innerRadius);
+    
+    
+    var sections = chart.selectAll('g.arc')
+      .data(pie(c.data))
+      .enter()
+      .append('g')
+      .attr({
+        'class' : 'arc',
+        'transform' : 'translate(' + outerRadius + ', ' + outerRadius + ')'
+      });
+    
+    
+    
+    sections.append('path')//Inherits start angle and end angle from data bound by pie function
+            .attr({
+              'fill' : function(d,i){return getColor(i)},
+               'd' : arc
+              })
+            .attr("data-legend",function(d) { return d.name});
+              
+    sections.append('text')
+        .attr({
+        'text-anchor': 'middle',
+        'transform': function (d) {
+            return 'translate(' + arc.centroid(d) + ')';
+        }
+    })
+        .text(function (d){return (d.data.count/total)*100+'%';});
+        
+    
+                
+    
+          var legend = chart.selectAll('rect')
+          .data(colorArray)
+          .enter()
+          .append('rect')
+          .attr("x", 200)
+          .attr("y", function(d, i){ return 200+i *  20;})
+          .attr("width", 10)
+          .attr("height", 10)
+          .style('fill', function(d,i){return getColor(i);});                                                  
+
+                                        
+
+          var legendtext = chart.selectAll('.legend')
+          .data(tvshows)
+          .enter()
+          .append('g')
+          .attr('transform', function(d, i){ return 'translate('+0+','+0+')';})
+          .attr('class','legend'); 
+
+          legendtext.append('text')
+          .attr("x", 210)
+          .attr("y", function(d, i){ return 210+i *  20;})
+          .text(function(d, i){ return tvshows[i].show;});
+              
+  function getColor (i) {
+  
+  return colorArray[i];
+}
+  }
+  
+
+  Donut({data:tvshows});
+
+</script>
+
+</html>
