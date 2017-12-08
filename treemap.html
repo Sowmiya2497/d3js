@@ -1,0 +1,77 @@
+<html>
+
+<head>
+  <script src = "https://d3js.org/d3.v3.min.js"></script>
+</head>
+
+<body>
+
+  <div id = "chart"></div>
+
+</body>
+
+<script>
+
+  var data = {
+  "name":"S",
+  "value":100,
+  "children":[
+  {
+    "name":"N",
+    "value":50,
+    "children":[
+    { "name" : "A","value":25 },
+    { "name" : "B","value":25 },
+    { "name" : "C","value":25 }]
+  },
+  
+   {
+    "name":"M",
+    "value":50,
+    "children":[
+    { "name" : "D","value":50 },
+    { "name" : "E","value":65 }]
+  },
+  
+  {
+    "name":"F",
+    "value":45
+  }]
+  
+};
+
+  var colour = d3.scale.category20c();
+
+  var svg = d3.select("body").append("svg")
+              .attr('width',600)
+              .attr('height',600);
+              
+  
+  var treemap = d3.layout.treemap()
+                  .size([600,600])
+                  .nodes(data);
+              
+                  
+  console.log(treemap);
+  
+  var groups = svg.selectAll('.leaf')
+                  .data(treemap)
+                  .enter()
+                  .append('g')
+                  .attr('class','leaf');
+                  
+  groups.append('rect')
+        .attr('x',function(d,i){ return d.x; })
+        .attr('y',function(d,i){ return d.y; })
+        .attr('width',function(d,i){ return d.dx; })
+        .attr('height',function(d,i){ return d.dy; })
+        .style('fill',function(d,i){ return d.children ? null : colour(d.parent.name);});
+  
+  groups.append('text')
+        .attr('x',function(d,i){ return d.x + d.dx/2; })
+        .attr('y',function(d,i){ return d.y + d.dy/2; })
+        .text(function(d,i){ return d.name; });
+  
+</script>
+
+</html>
