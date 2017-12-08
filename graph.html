@@ -1,0 +1,110 @@
+<html>
+
+<head>
+  <script src = "https://d3js.org/d3.v3.min.js"></script>
+  <style>
+			body{ font: Arial 12px; text-align: center;}
+
+			.link {
+			  stroke: #ccc;
+			}
+
+			.node text {
+			  pointer-events: none;
+			  font: sans-serif;
+			}
+  </style>
+</head>
+
+
+<body>
+
+</body>
+
+<script>
+
+    //Set margins and sizes
+  var margin = {
+  top: 20,
+  bottom: 50,
+  right: 30,
+  left: 50
+  };
+
+  var width = 960 - margin.left - margin.right;
+  var height = 700 - margin.top - margin.bottom;
+
+  var c10 = d3.scale.category10();
+  
+  var svg = d3.select("body").append('svg')
+              .attr('width',width)
+              .attr('height',height)
+              .append('g')
+              
+  d3.json("/static/data.json",function(data){
+  
+    var nodes = data.nodes;
+    var links = data.links;
+    
+    var force = d3.layout.force() //Force Layout takes in nodes and links separately
+                  .size([width,height])
+                  .nodes(nodes) 
+                  .links(links)
+                  .gravity(0.05) //Gravity is used to move heavier nodes into a more central position. Force increases as distance increases. It prevents disconnected components from moving away out of the svg due to repulsive force.
+                  .charge(-200) //Negative charge is used to maintain repulsive forces between unconnected nodes
+                  .linkDistance(200); //Almost all the edges in the graph have same distance as specified here.
+          
+   
+    
+    var link = svg.selectAll('.link')
+                   .data(links)
+                   .enter()
+                   .append('line')
+                   .attr('stroke-width',function(d,i){ return d.weight/10; }) //The thickness of the link depends on the weight property of the link
+                   .attr('class','link');
+                   
+    var nodes = svg.selectAll('.nodes')
+                   .data(nodes)
+                   .enter()
+                   .append('g')
+                   .attr('class','nodes')
+                   .call(force.drag); //Allows node dragging. From time b/w mousedown event to mouseup event, node location is set to mouse position
+ 
+    var label = nodes.append("text")
+    .attr("dx", 12)
+    .attr("dy", "0.35em")
+    .attr("font-size", function(d){ return d.influence*1.5>9? d.influence*1.5: 9; })
+    .text(function(d){ return d.character; });
+    
+    var circle = nodes.append("circle")
+    .attr("r", function(d){ return d.influence/2>5 ? d.influence/2 : 5; })
+    .attr("fill", function(d){ return c10(d.zone*10); });
+    
+    
+    //This function will be executed once force layout is done with its calculations
+    
+    //Set event listener on layout
+    force.on("tick", function(){ //For each 'tick' of the simulation
+    //Set X and Y of node
+    nodes//.attr("r", function(d){ return d.influence; })
+    .attr("cx", function(d){ return d.x; })
+    .attr("cy", function(d){ return d.y; });
+    //Set X, Y of link
+    link.attr("x1", function(d){ return d.source.x; })
+    link.attr("y1", function(d){ return d.source.y; })
+    link.attr("x2", function(d){ return d.target.x; })
+    link.attr("y2", function(d){ return d.target.y; });
+    //Shift node a little
+    nodes.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+    });
+
+    //Start the force layout calculation
+    force.start();
+
+});
+  
+
+</script>
+
+
+</html>
