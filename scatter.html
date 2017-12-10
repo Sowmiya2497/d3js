@@ -1,0 +1,255 @@
+<html>
+
+<head>
+  <script src = "https://d3js.org/d3.v3.min.js"></script>
+  <style>
+  
+  .axis path, .axis line {
+		fill: none;
+		stroke: #000;
+		shape-rendering: crispEdges;
+	}
+  
+  .buttons{
+    position:relative;
+    top:40%;
+    left:43%;
+  
+  </style>
+  
+  
+</head>
+
+<body>
+  <h1> College Tuition fees vs Student Loans over the years </h1>  
+  <div class = "buttons">
+  <p>Point size is proportional to total students enrolled in the institution</p>
+  <div id = "b1">
+    <input type = "button" id = "b1" value = "1999-2000">
+  </div>
+  <br>
+  <div id = "b2">
+    <input type = "button" id = "b2" value = "2000-2001">
+  </div>
+  <br>
+  <div id = "b3">
+    <input type = "button" id = "b3" value = "2001-2002">
+  </div>
+  </div>
+
+<body>
+
+<script>
+  
+  var height = 500;
+  var width = 500;
+  var margin =
+  {
+    left : 80,
+    right : 40,
+    top : 40,
+    bottom : 30
+  };
+  
+  var types = ['Public','Non-Profit','Profit'];
+  var colors = ['#810038','#008080','#0155e5'];
+  
+  
+  var svg = d3.select('body').append('svg')
+              .attr('width',width + margin.left+margin.right)
+              .attr('height',height+margin.top+margin.bottom)
+              .append('g')
+              .attr('transform','translate('+margin.left+','+margin.top+')');
+  
+  //Scales for x and y axis
+  var x = d3.scale.linear()
+            .range([0,width]);
+  var y = d3.scale.linear()
+            .range([height,0]);
+  
+  //X-axis
+  var xAxis = d3.svg.axis()
+		.scale(x)
+		.orient("bottom");
+
+  //Y-axis
+	var yAxis = d3.svg.axis()
+		.scale(y)
+		.orient("left");
+    
+  var formatCurrency = d3.format(",");
+  
+ 
+  var color = d3.scale.ordinal()
+		.domain(types)
+		.range(colors);
+    
+  d3.csv("/static/loanvscost.csv",function(data){
+  
+    //console.log(data.TF9900);
+  
+    x.domain([0, 30000]);
+		y.domain([0, 11000]);
+
+		//x axis
+		svg.append("g")
+			.attr("class", "x axis")
+			.attr("transform", "translate(0," + height + ")")
+			.call(xAxis)
+			.append("text")
+				.attr("class", "label")
+				.attr("x", width)
+				.attr("y", -6)
+				.style("text-anchor", "end")
+				.text("Tuition and Fees ($)");
+
+		//y axis
+		svg.append("g")
+			.attr("class", "y axis")
+      //.attr("transform", "translate("+margin.left+ ",0)")
+			.call(yAxis)
+			.append("text")
+				.attr("class", "label")
+				.attr("transform", "rotate(-90)")
+				.attr("y", 6)
+				.attr("dy", ".71em")
+				.style("text-anchor", "end")
+				.text("Avg. Student Loan Total ($)")
+    
+    
+        var labels = svg.selectAll('.legendados')
+         .data(types)
+         .enter()
+         .append('g')
+         .attr('class','legendados');
+         
+        labels.append('rect')
+        .attr('width',10)
+        .attr('height',10)
+        .attr('y',function(d,i){ return height/2 + 20*i;})
+        .attr('x',width-40)
+        .style('fill',function(d,i){ return colors[i]; });
+        
+        labels.append('text')
+        //.attr('width',10)
+        //.attr('height',10)
+        .attr('transform',function(d,i){ return 'translate('+ (width -40+10) +','+ (height/2 + 10+ 20*i) + ')';})
+        .text(function(d,i){ return d; });
+        
+        function plot(val)
+        {
+        
+          console.log(val);
+            
+            //dots is update selection.It returns an empty selection.
+            var dots = svg.selectAll('.dot')
+                        .data(data)
+                        
+                        //get the enter selection
+                        dots.enter()
+                        .append('circle')
+                        .attr('class','dot')
+                        .style('fill',function(d,i){ return color(d.type);})
+                        .attr('stroke','black')
+                       
+          if(val==1)
+          {
+            
+               
+               /*dots.exit()
+                .transition()
+                .duration(300)
+                //.ease("exp")
+                .attr("r", 0)
+                .remove()*/
+                
+                //on the update selections
+                dots.transition()
+                .duration(400)
+                //.ease("quad")
+                
+                .attr('r',function(d,i){ return 4 + (d.TotalEnrollment*0.0006); })
+                .attr('cx',function(d,i){ return x(d.TF9900);})
+                .attr("cy", 
+              function(d) {
+                return y(d.loan9900);
+              })
+              
+              
+              
+          }
+          else if(val==2)
+          {
+           
+               
+               /*dots.exit()
+                .transition()
+                .duration(300)
+                //.ease("exp")
+                .attr("r", 0)
+                .remove()*/
+                
+                dots.transition()
+                .duration(400)
+                //.ease("quad")
+                
+                .attr('r',function(d,i){ return 4 + (d.TotalEnrollment*0.0006); })
+                .attr('cx',function(d,i){ return x(d.TF0001);})
+                .attr("cy", 
+              function(d) {
+                return y(d.loan0001);
+              })
+              
+              
+          }
+          else if(val==3)
+          {
+            dots.transition()
+                .duration(400)
+                //.ease("quad")
+                .attr('r',function(d,i){ return 4 + (d.TotalEnrollment*0.0006); })
+                .attr('cx',function(d,i){ return x(d.TF0102);})
+                .attr("cy", 
+              function(d) {
+                return y(d.loan0102);
+              })
+            
+          }
+          
+        }
+        
+         d3.select("#b1")
+        .on("click", function(d,i) {
+            plot(1)
+        })   
+    d3.select("#b2")
+        .on("click", function(d,i) {
+            plot(2)
+        })  
+        
+    d3.select("#b3")
+        .on("click", function(d,i) {
+            plot(3)
+        }) 
+    
+        
+        
+      plot(1);
+        
+           
+         
+  });
+  
+/*Initially, only the first plot is rendered. At this point, the enter selection is carried out and appends the circles newly for first time.
+Next, a SEPARATE update selection on these freshly rendered circles is carried out. This update updates radius,cx,cy.
+
+Why does update selection need to be separate from enter? Suppose you chained the methods continously(enter followed by update continously without the separation seen here ) in 1 big selection. Then, 
+after rendering the first plot, if u click on the button for second, it will go into enter method first. At this point,since previously itself(during first plot rendering) you added all the 38 circles
+the enter selection will be empty. So none of the chained subsequent methods will be executed, as there are no elets in the enter section.
+
+So,everytime, you only carry out the update(change in position and size of circle) freshly, instead of appending the circles also freshly.
+(Try changing it into one continous selection and see what happens. No transition will occur for second case.)*/
+  
+</script>
+
+</html>
