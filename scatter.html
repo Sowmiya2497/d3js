@@ -240,16 +240,7 @@
          
   });
   
-/*Initially, only the first plot is rendered. At this point, the enter selection is carried out and appends the circles newly for first time.
-Next, a SEPARATE update selection on these freshly rendered circles is carried out. This update updates radius,cx,cy.
 
-Why does update selection need to be separate from enter? Suppose you chained the methods continously(enter followed by update continously without the separation seen here ) in 1 big selection. Then, 
-after rendering the first plot, if u click on the button for second, it will go into enter method first. At this point,since previously itself(during first plot rendering) you added all the 38 circles
-the enter selection will be empty. So none of the chained subsequent methods will be executed, as there are no elets in the enter section.
-
-So,everytime, you only carry out the update(change in position and size of circle) freshly, instead of appending the circles also freshly.
-(Try changing it into one continous selection and see what happens. No transition will occur for second case.)*/
-  
 </script>
 
 </html>
