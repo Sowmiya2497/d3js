@@ -2,6 +2,19 @@
 
 d3js visualizations of data
 
-##Animated pie chart
+## Animated scatter chart
 
 ![alt](https://github.com/Sowmiya2497/d3js/blob/master/scatter.gif)
+
+## Force Directed Graph
+
+![alt](https://github.com/Sowmiya2497/d3js/blob/master/force directed graph.gif)
+
+## Animated pie chart
+
+![alt](https://github.com/Sowmiya2497/d3js/blob/master/pie.gif)
+
+## Bubble Chart
+
+![alt](https://github.com/Sowmiya2497/d3js/blob/master/bubble.png)
+
