@@ -8,7 +8,7 @@ d3js visualizations of data
 
 ## Force Directed Graph
 
-![alt](https://github.com/Sowmiya2497/d3js/blob/master/force%20directed%20graph.gif.gif)
+![alt](https://github.com/Sowmiya2497/d3js/blob/master/force%20directed%20graph.gif)
 
 ## Animated pie chart
 
